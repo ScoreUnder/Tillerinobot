@@ -608,18 +608,19 @@ public class Tsundere implements Language {
 		));
 	}
 
-	int invalidRecommendationParameterCount = 0;
+	protected boolean shouldGiveFakeRecommendation() {
+		// Give a fake recommendation 75% of the time.
+		// The rest of the time, normal behaviour (i.e. show an error)
+		return rnd.nextInt(4) < 3;
+	}
 
 	@Override
 	public String invalidChoice(String invalid, String choices) {
 		if (choices.contains("[nomod]")) {
 			// recommendation parameter was off
 			setChanged(true);
-			/*
-			 * we'll give three fake recommendations and then one proper error
-			 * message. non-randomness required for unit test.
-			 */
-			if (invalidRecommendationParameterCount++ % 4 < 3) {
+
+			if (shouldGiveFakeRecommendation()) {
 				return unknownRecommendationParameter();
 			}
 		}

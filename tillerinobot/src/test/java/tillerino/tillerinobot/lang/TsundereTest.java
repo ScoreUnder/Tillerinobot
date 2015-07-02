@@ -13,11 +13,21 @@ import tillerino.tillerinobot.UserException;
 import tillerino.tillerinobot.handlers.RecommendHandler;
 
 public class TsundereTest {
+	// For the sake of testability, a random check here is made deterministic.
+	private static class DeterministicTsundere extends Tsundere {
+		private int invalidRecommendationParameterCount = 0;
+
+		@Override
+		protected boolean shouldGiveFakeRecommendation() {
+			// Return true exactly 75% of the time:
+			return invalidRecommendationParameterCount++ % 4 != 3;
+		}
+	}
 
 	@Test
 	public void testInvalidChoice() throws Exception {
 		// spy on a fresh tsundere object
-		Tsundere tsundere = spy(new Tsundere());
+		Tsundere tsundere = spy(new DeterministicTsundere());
 
 		// mock backend and create RecommendationsManager and RecommendHandler based on mocked backend
 		BotBackend backend = mock(BotBackend.class);
